@@ -8,6 +8,11 @@
       playerdiv.id = "player"
       firstScriptTag.parentNode.insertBefore(playerdiv, firstScriptTag);
 
+      var markTag = document.createElement("a");
+      markTag.onclick = "markPhraseStart();";
+      markTag.textContent = "Mark start of section."
+      firstScriptTag.parentNode.insertBefore(markTag, firstScriptTag);
+
       // 2. This code loads the IFrame Player API code asynchronously.
       var tag = document.createElement('script');
       tag.src = "http://www.youtube.com/player_api";
@@ -59,6 +64,10 @@
           videoId = 'u1zgFlCw8Aw';
         }
         return videoId;
+      }
+      var sectionStarts = [];
+      function markPhraseStart(){
+        sectionStarts.append(player.getCurrentTime());
       }
     </script>
   </body>
