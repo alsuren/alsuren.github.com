@@ -17,11 +17,12 @@
       //    after the API code downloads.
       var player;
       function onYouTubePlayerAPIReady() {
+        var videoId = getVideoId()
         
         player = new YT.Player('player', {
           height: '390',
           width: '640',
-          videoId: 'u1zgFlCw8Aw',
+          videoId: videoId,
           events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange
@@ -46,6 +47,17 @@
       }
       function stopVideo() {
         player.stopVideo();
+      }
+
+      function getVideoId() {
+        var anchor = window.location.split("#")[1];
+        var videoId;
+        if(anchor) {
+          videoId = anchor.match(/(v=)([^&]*)/)[2];
+        }
+        if(!videoId) {
+          videoId = 'u1zgFlCw8Aw';
+        }
       }
     </script>
   </body>
