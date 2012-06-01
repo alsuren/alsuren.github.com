@@ -50,7 +50,7 @@
       }
 
       function getVideoId() {
-        var anchor = window.location.split("#")[1];
+        var anchor = window.location.hash;
         var videoId;
         if(anchor) {
           videoId = anchor.match(/(v=)([^&]*)/)[2];
