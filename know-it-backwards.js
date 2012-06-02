@@ -1,70 +1,97 @@
-var firstScriptTag = document.getElementsByTagName('script')[0];
+var newPracticePlayer = function() {
 
-// 1. The <iframe> (and video player) will replace this <div> tag.
-var playerdiv = document.createElement('div');
-playerdiv.id = "player"
-firstScriptTag.parentNode.insertBefore(playerdiv, firstScriptTag);
+  // Can you tell that I'm a python programmer?
+  var self = {};
 
-var markTag = document.createElement("a");
-markTag.onclick = "markPhraseStart();";
-markTag.textContent = "Mark start of section."
-firstScriptTag.parentNode.insertBefore(markTag, firstScriptTag);
 
-// 2. This code loads the IFrame Player API code asynchronously.
-var tag = document.createElement('script');
-tag.src = "http://www.youtube.com/player_api";
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-// 3. This function creates an <iframe> (and YouTube player)
-//    after the API code downloads.
-var player;
-function onYouTubePlayerAPIReady() {
-  var videoId = getVideoId()
-        
-  player = new YT.Player('player', {
-    height: '390',
-    width: '640',
-    videoId: videoId,
-    events: {
-      'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
+  var getVideoId = function() {
+    var anchor = window.location.hash;
+    var videoId;
+    if(anchor) {
+      videoId = anchor.match(/(v=)([^&]*)/)[2];
     }
-  });
-}
+    if(!videoId) {
+      videoId = 'u1zgFlCw8Aw';
+    }
+    return videoId;
+  };
 
-// 4. The API will call this function when the video player is ready.
-function onPlayerReady(event) {
-  event.target.playVideo();
-}
+  var insertBefore = function(newNode, desiredSibling) {
+    desiredSibling.parentNode.insertBefore(newNode, desiredSibling);
+  };
 
-// 5. The API calls this function when the player's state changes.
-//    The function indicates that when playing a video (state=1),
-//    the player should play for six seconds and then stop.
-var done = false;
-function onPlayerStateChange(event) {
-  if (event.data == YT.PlayerState.PLAYING && !done) {
-    setTimeout(stopVideo, 6000);
-    done = true;
+  var newPlayer = function(desiredSibling) {
+    // The <iframe> (and video player) will replace this <div> tag.
+    var playerdiv = document.createElement('div');
+    playerdiv.id = 'player';
+    insertBefore(playerdiv, desiredSibling);
+
+    var videoId = getVideoId();
+
+    var onPlayerReady = function(event) {
+      player.playVideo();
+    };
+
+    var done = false;
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.PLAYING && !done) {
+        setTimeout(stopVideo, 6000);
+        done = true;
+      }
+    };
+
+    var stopVideo = function() {
+      player.stopVideo();
+    };
+
+    var player = new YT.Player('player', {
+      height: '390',
+      width: '640',
+      videoId: videoId,
+      events: {
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
+      }
+    });
+
+    return player;
+  };
+
+  var markPhraseStart = function() {
+    sectionStarts.push(self.player.getCurrentTime());
+  };
+
+  var initSectionTracking = function(desiredSibling) {
+    self.sectionStarts = [];
+    var markButton = document.createElement('input');
+    markButton.type = 'button';
+    markButton.value = 'Start New Section Now';
+    markButton.onclick = markPhraseStart;
+
+    insertBefore(markbutton, desiredSibling);
   }
-}
-function stopVideo() {
-  player.stopVideo();
-}
 
-function getVideoId() {
-  var anchor = window.location.hash;
-  var videoId;
-  if(anchor) {
-    videoId = anchor.match(/(v=)([^&]*)/)[2];
+  self.init = function() {
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    self.player = newPlayer(firstScriptTag);
+    initSectionTracking(firstScriptTag);
   }
-  if(!videoId) {
-    videoId = 'u1zgFlCw8Aw';
-  }
-  return videoId;
+
+  return self;
 }
 
-var sectionStarts = [];
-function markPhraseStart(){
-  sectionStarts.append(player.getCurrentTime());
+function onYouTubePlayerAPIReady() {
+  // Global player object for debugging.
+  // I think that we could let the player go out of scope and it would still leak:
+  // The onclick callback closures should keep it alive.
+  practicePlayer = newPracticePlayer();
+  practicePlayer.init()
 }
 
+window.onload = function() {
+  // Create player api asyncronously. This will call onYoutubePlayerApiReady for us.
+  var tag = document.createElement('script');
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  tag.src = "http://www.youtube.com/player_api";
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
