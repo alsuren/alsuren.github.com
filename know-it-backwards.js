@@ -72,9 +72,9 @@ var newPracticePlayer = function() {
   }
 
   self.init = function() {
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    self.player = newPlayer(firstScriptTag);
-    initSectionTracking(firstScriptTag);
+    var firstDivTag = document.getElementsByTagName('div')[0];
+    self.player = newPlayer(firstDivTag);
+    initSectionTracking(firstDivTag);
   }
 
   return self;
@@ -88,10 +88,8 @@ function onYouTubePlayerAPIReady() {
   practicePlayer.init()
 }
 
-window.onload = function() {
   // Create player api asyncronously. This will call onYoutubePlayerApiReady for us.
   var tag = document.createElement('script');
   var firstScriptTag = document.getElementsByTagName('script')[0];
   tag.src = "http://www.youtube.com/player_api";
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-}
