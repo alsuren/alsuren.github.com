@@ -68,7 +68,7 @@ var newPracticePlayer = function() {
     markButton.value = 'Start New Section Now';
     markButton.onclick = markPhraseStart;
 
-    insertBefore(markbutton, desiredSibling);
+    insertBefore(markButton, desiredSibling);
   }
 
   self.init = function() {
