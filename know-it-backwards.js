@@ -57,8 +57,8 @@ var newPracticePlayer = function() {
     return player;
   };
 
-  var markPhraseStart = function() {
-    sectionStarts.push(self.player.getCurrentTime());
+  var markSectionStart = function() {
+    self.sectionStarts.push(self.player.getCurrentTime());
   };
 
   var initSectionTracking = function(desiredSibling) {
@@ -66,7 +66,7 @@ var newPracticePlayer = function() {
     var markButton = document.createElement('input');
     markButton.type = 'button';
     markButton.value = 'Start New Section Now';
-    markButton.onclick = markPhraseStart;
+    markButton.onclick = markSectionStart;
 
     insertBefore(markButton, desiredSibling);
   }
