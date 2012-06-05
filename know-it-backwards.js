@@ -62,6 +62,7 @@ var newPracticePlayer = function() {
     var e = document.createElement('input');
     e.type = 'button';
     e.value = time.toFixed(2);
+    e.onclick = function(event) { self.player.seekTo(time, true) }
     return e;
   }
 
