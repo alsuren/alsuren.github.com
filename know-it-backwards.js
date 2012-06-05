@@ -98,7 +98,7 @@ var newPracticePlayer = function() {
   var markSectionStart = function() {
     var t = self.player.getCurrentTime();
     for (var i = 0; i < self.sectionStarts.length; i++) {
-      if(Math.mod(self.sectionStarts[i] - t) < TIME_RESOLUTION) {
+      if(Math.abs(self.sectionStarts[i] - t) < TIME_RESOLUTION) {
         return;
       }
     }
@@ -142,3 +142,4 @@ function onYouTubePlayerAPIReady() {
   var firstScriptTag = document.getElementsByTagName('script')[0];
   tag.src = "http://www.youtube.com/player_api";
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
