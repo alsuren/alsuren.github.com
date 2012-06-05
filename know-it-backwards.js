@@ -1,5 +1,6 @@
 var newPracticePlayer = function() {
 
+  var TIME_RESOLUTION = 0.05;
   // Can you tell that I'm a python programmer?
   var self = {};
 
@@ -57,18 +58,65 @@ var newPracticePlayer = function() {
     return player;
   };
 
+  var createSectionElement = function(time) {
+    var e = document.createElement('input');
+    e.type = 'button';
+    e.value = time.toFixed(2);
+    return e;
+  }
+
+  var getSectionTime = function(element) {
+    // FIXME: This looks fragile. Could I just attatch a bullshit float somewhere?
+    return parseFloat(element.value);
+  }
+
+  var updatePhraseStartView = function() {
+    var currentChild = self.sectionsElement.firstChild;
+    var lastChild;
+    if (!currentChild && self.sectionStarts.length) {
+      currentChild = createSectionElement(self.sectionStarts[0]);
+      self.sectionsElement.appendChild(currentChild);
+    }
+
+    for (var i = 0; i < self.sectionStarts.length; i++) {
+      var start = self.sectionStarts[i];
+      // FIXME: handle removals.
+      while (currentChild && getSectionTime(currentChild) < start - TIME_RESOLUTION) {
+        lastChild = currentChild;
+        currentChild = currentChild.nextSibling;
+      }
+      if (!currentChild || getSectionTime(currentChild) > start
+         + TIME_RESOLUTION) {
+        var newElement = createSectionElement(start);
+        self.sectionsElement.insertBefore(newElement, currentChild);
+      }
+      // else it's already there. Nothing to do here.
+    }
+  }
+
   var markSectionStart = function() {
-    self.sectionStarts.push(self.player.getCurrentTime());
+    var t = self.player.getCurrentTime();
+    for (var i = 0; i < self.sectionStarts.length; i++) {
+      if(Math.mod(self.sectionStarts[i] - t) < TIME_RESOLUTION) {
+        return;
+      }
+    }
+    self.sectionStarts.push(t);
+    self.sectionStarts.sort();
+    updatePhraseStartView();
   };
 
   var initSectionTracking = function(desiredSibling) {
+    // sorted list of seconds.
     self.sectionStarts = [];
     var markButton = document.createElement('input');
     markButton.type = 'button';
     markButton.value = 'Start New Section Now';
     markButton.onclick = markSectionStart;
-
     insertBefore(markButton, desiredSibling);
+
+    self.sectionsElement = document.createElement('p');
+    insertBefore(self.sectionsElement, desiredSibling);
   }
 
   self.init = function() {
