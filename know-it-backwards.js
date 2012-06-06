@@ -63,7 +63,18 @@ var newPracticePlayer = function() {
             width: '640',
             videoId: videoId,
             events: {
-                'onReady': startTraining
+                'onReady': function() {
+                    var unMute = !self.player.isMuted();
+                    self.player.mute();
+                    self.player.playVideo();
+                    preloadVideo(function() {
+                        // I can trust this not to block.
+                        startTraining();
+                        if (unMute) {
+                            self.player.unMute();
+                        }
+                    });
+                }
             }
         });
 
@@ -203,6 +214,28 @@ var newPracticePlayer = function() {
         self.trainButton.onclick = stopTraining;
         startTrainingRun(userData);
     };
+
+    var preloadVideo = function(cb) {
+        // FIXME: if the user seeks or hits play or anything, we should probably abort.
+        if (self.trainingGeneration !== 0) {
+            return;
+        }
+        self.trainButton.value = "Loading... Click if Impatient.";
+        self.trainButton.onclick = cb;
+        var currentTime = self.player.getCurrentTime();
+        var duration = self.player.getDuration();
+        var totalSize = self.player.getVideoBytesTotal();
+        var loadedSize = self.player.getVideoBytesLoaded();
+        var targetTime = duration * (loadedSize / totalSize);
+
+        if ((targetTime || 0) > (last(self.sectionStarts) || 0)) {
+            cb();
+        }
+        else {
+            setTimeout(preloadVideo, 1000, cb);
+            return;
+        }
+    }
 
     var getCurrentVideo = function() {
         if (!self.player.getVideoUrl) {
