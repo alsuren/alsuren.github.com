@@ -139,11 +139,18 @@ var newPracticePlayer = function() {
         return a[a.length - 1];
     };
 
-    var setRealTimer = function() {
+    var makeUpTheDifference = function() {
         var endTime = last(self.sectionStarts);
         var curTime = self.player.getCurrentTime();
         var timeout = (endTime - curTime) * 1000;
         setTimeout(startTrainingRun, timeout);
+    }
+
+    var setRealTimer = function() {
+        var endTime = last(self.sectionStarts);
+        var curTime = self.player.getCurrentTime();
+        var timeout = (endTime - curTime) * 1000;
+        setTimeout(makeUpTheDifference, timeout);
     }
 
     var setTimer = function() {
