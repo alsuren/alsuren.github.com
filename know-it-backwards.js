@@ -222,7 +222,7 @@ var newPracticePlayer = function() {
         var requestedVideo = getVideoId();
         if (currentVideo !== requestedVideo) {
             console.log("changing video from " + currentVideo + " to " + requestedVideo);
-            self.player.loadVideoById(requestedVideo);
+            self.player.cueVideoById(requestedVideo);
         }
         self.introPeriod = getIntroPeriod();
         updateSectionView();
