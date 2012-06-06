@@ -48,7 +48,9 @@ var newPracticePlayer = function() {
             height: '390',
             width: '640',
             videoId: videoId,
-            events: {}
+            events: {
+                'onReady': startTraining
+            }
         });
 
         return player;
