@@ -137,7 +137,7 @@ var newPracticePlayer = function() {
         self.trainingRunsDone++;
         var i = self.sectionStarts.length - (self.trainingRunsDone + 1);
         if (i < 0) {
-            self.player.stop();
+            self.player.stopVideo();
             return;
         }
         var pos = self.sectionStarts[i];
