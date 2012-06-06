@@ -86,6 +86,7 @@ var newPracticePlayer = function() {
         e.type = 'button';
         e.value = time.toFixed(1);
         e.onclick = function(event) {
+            stopTraining();
             self.player.seekTo(time - self.introPeriod, true);
         };
         return e;
@@ -159,7 +160,7 @@ var newPracticePlayer = function() {
 
     var stopTraining = function() {
         self.trainingGeneration++;
-        self.player.stopVideo();
+        self.player.pauseVideo();
         self.trainButton.value = 'Train!';
         self.trainButton.onclick = startTraining;
     }
