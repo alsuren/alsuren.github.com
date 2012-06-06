@@ -158,6 +158,7 @@ var newPracticePlayer = function() {
 
     var initSectionTracking = function(desiredSibling) {
         // sorted list of seconds.
+        // FIXME: listen for location updates.
         self.sectionStarts = getSections();
         var markButton = document.createElement('input');
         markButton.type = 'button';
