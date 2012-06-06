@@ -226,7 +226,7 @@ var newPracticePlayer = function() {
         self.sectionsElement = document.createElement('p');
         insertBefore(self.sectionsElement, desiredSibling);
 
-        updateSectionView();
+        reparseHash();
     };
 
     self.init = function() {
