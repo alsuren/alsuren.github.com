@@ -1,6 +1,7 @@
 var newPracticePlayer = function() {
 
     var TIME_RESOLUTION = 0.2;
+    var DEFAULT_INTRO_PERIOD = 1;
     var DEFAULT_VIDEO = 'u1zgFlCw8Aw';
     // Can you tell that I'm a python programmer yet?
     var self = {};
@@ -16,6 +17,18 @@ var newPracticePlayer = function() {
             videoId = DEFAULT_VIDEO;
         }
         return videoId;
+    };
+
+    var getIntroPeriod = function() {
+        var anchor = window.location.hash;
+        var intro;
+        if (anchor) {
+            intro = (anchor.match(/(intro=)([^&]*)/) || [])[2];
+        }
+        if (!intro || isNaN(parseFloat(intro))) {
+            intro = DEFAULT_INTRO_PERIOD;
+        }
+        return parseFloat(intro);
     };
 
     var getSections = function() {
@@ -62,8 +75,8 @@ var newPracticePlayer = function() {
         e.type = 'button';
         e.value = time.toFixed(1);
         e.onclick = function(event) {
-            self.player.seekTo(time, true)
-        }
+            self.player.seekTo(time - self.introPeriod, true);
+        };
         return e;
     };
 
@@ -128,7 +141,8 @@ var newPracticePlayer = function() {
             return i.toFixed(1)
         });
         var sections = sectionStrings.join(',');
-        hash = hash + 'sections=' + sections;
+        hash = hash + 'sections=' + sections + '&';
+        hash = hash + 'intro=' + self.introPeriod.toFixed(1);
         window.location.hash = hash;
     };
 
@@ -149,7 +163,7 @@ var newPracticePlayer = function() {
             stopTraining();
             return;
         }
-        var pos = self.sectionStarts[i];
+        var pos = self.sectionStarts[i] - self.introPeriod;
         self.player.seekTo(pos);
 
         setTimer(userData);
@@ -209,6 +223,7 @@ var newPracticePlayer = function() {
             console.log("changing video from " + currentVideo + " to " + requestedVideo);
             self.player.loadVideoById(requestedVideo);
         }
+        self.introPeriod = getIntroPeriod();
         updateSectionView();
     };
 
