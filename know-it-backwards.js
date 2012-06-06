@@ -132,46 +132,62 @@ var newPracticePlayer = function() {
     }
 
 
+    var stopTraining = function() {
+        self.trainingGeneration++;
+        self.player.stopVideo();
+        self.trainButton.value = 'Train!';
+        self.trainButton.onclick = startTraining;
+    }
 
-    var startTrainingRun = function() {
+    var startTrainingRun = function(userData) {
+        if (self.trainingGeneration !== userData.trainingGeneration) {
+            return;
+        }
         self.trainingRunsDone++;
         var i = self.sectionStarts.length - (self.trainingRunsDone + 1);
         if (i < 0) {
-            self.player.stopVideo();
+            stopTraining();
             return;
         }
         var pos = self.sectionStarts[i];
         self.player.seekTo(pos);
 
-        setTimer();
+        setTimer(userData);
     };
 
     var last = function(a) {
         return a[a.length - 1];
     };
 
-    var makeUpTheDifference = function() {
+    var makeUpTheDifference = function(userData) {
         var endTime = last(self.sectionStarts);
         var curTime = self.player.getCurrentTime();
         var timeout = (endTime - curTime) * 1000;
-        setTimeout(startTrainingRun, timeout);
+        setTimeout(startTrainingRun, timeout, userData);
     }
 
-    var setRealTimer = function() {
+    var setRealTimer = function(userData) {
         var endTime = last(self.sectionStarts);
         var curTime = self.player.getCurrentTime();
         var timeout = (endTime - curTime) * 1000;
-        setTimeout(makeUpTheDifference, timeout);
+        setTimeout(makeUpTheDifference, timeout, userData);
     }
 
-    var setTimer = function() {
-        setTimeout(setRealTimer, 1000);
+    var setTimer = function(userData) {
+        setTimeout(setRealTimer, 1000, userData);
     };
 
+    self.trainingGeneration = 0;
     var startTraining = function() {
-        console.log('starting')
+        self.trainingGeneration++;
+        var userData = {
+            trainingGeneration: self.trainingGeneration
+        };
         self.trainingRunsDone = 0;
-        startTrainingRun();
+
+        self.trainButton.value = 'Stop!';
+        self.trainButton.onclick = stopTraining;
+        startTrainingRun(userData);
     };
 
     var reparseHash = function() {
@@ -202,11 +218,11 @@ var newPracticePlayer = function() {
         saveButton.onclick = saveToUri;
         insertBefore(saveButton, desiredSibling);
 
-        var trainButton = document.createElement('input');
-        trainButton.type = 'button';
-        trainButton.value = 'Train!';
-        trainButton.onclick = startTraining;
-        insertBefore(trainButton, desiredSibling);
+        self.trainButton = document.createElement('input');
+        self.trainButton.type = 'button';
+        self.trainButton.value = 'Train!';
+        self.trainButton.onclick = startTraining;
+        insertBefore(self.trainButton, desiredSibling);
 
         self.sectionsElement = document.createElement('p');
         insertBefore(self.sectionsElement, desiredSibling);
