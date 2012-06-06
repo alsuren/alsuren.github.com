@@ -58,19 +58,20 @@ var newPracticePlayer = function() {
 
         var videoId = getVideoId();
 
+        self.unMute = false;
         var player = new YT.Player('player', {
             height: '390',
             width: '640',
             videoId: videoId,
             events: {
                 'onReady': function() {
-                    var unMute = !self.player.isMuted();
+                    self.unMute = !self.player.isMuted();
                     self.player.mute();
                     self.player.playVideo();
                     preloadVideo(function() {
                         // I can trust this not to block.
                         startTraining();
-                        if (unMute) {
+                        if (self.unMute) {
                             self.player.unMute();
                         }
                     });
@@ -86,8 +87,9 @@ var newPracticePlayer = function() {
         e.type = 'button';
         e.value = time.toFixed(1);
         e.onclick = function(event) {
-            stopTraining();
+            stopTraining(false);
             self.player.seekTo(time - self.introPeriod, true);
+            self.player.playVideo();
         };
         return e;
     };
@@ -158,9 +160,14 @@ var newPracticePlayer = function() {
         window.location.hash = hash;
     };
 
-    var stopTraining = function() {
+    var stopTraining = function(pause) {
         self.trainingGeneration++;
-        self.player.pauseVideo();
+        if (self.unMute) {
+            self.player.unMute();
+        }
+        if (pause || pause === undefined) {
+            self.player.pauseVideo();
+        }
         self.trainButton.value = 'Train!';
         self.trainButton.onclick = startTraining;
     }
@@ -172,7 +179,7 @@ var newPracticePlayer = function() {
         self.trainingRunsDone++;
         var i = self.sectionStarts.length - (self.trainingRunsDone + 1);
         if (i < 0) {
-            stopTraining();
+            stopTraining(true);
             return;
         }
         var pos = self.sectionStarts[i] - self.introPeriod;
