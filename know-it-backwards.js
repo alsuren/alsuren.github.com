@@ -17,6 +17,21 @@ var newPracticePlayer = function() {
         return videoId;
     };
 
+    var getSections = function() {
+        var anchor = window.location.hash;
+        var sections;
+        if (anchor) {
+            sections = anchor.match(/(sections=)([^&]*)/)[2];
+        }
+        if (!sections) {
+            return [];
+        }
+        var floatList = sections.split(',').map(function(s) {
+            return parseFloat(s);
+        });
+        return floatList;
+    }
+
     var insertBefore = function(newNode, desiredSibling) {
         desiredSibling.parentNode.insertBefore(newNode, desiredSibling);
     };
@@ -115,17 +130,40 @@ var newPracticePlayer = function() {
         updatePhraseStartView();
     };
 
+    var saveToUri = function() {
+        var hash = "?";
+        var videoId = self.player.getVideoUrl().match(/(v=)([^&]*)/)[2];
+        if (videoId) {
+            hash = hash + 'v=' + videoId + '&';
+        }
+        var sectionStrings = self.sectionStarts.map(function(i) {
+            return i.toFixed(2)
+        });
+        var sections = sectionStrings.join(',');
+        hash = hash + 'sections=' + sections;
+        window.location.hash = hash;
+    }
+
     var initSectionTracking = function(desiredSibling) {
         // sorted list of seconds.
-        self.sectionStarts = [];
+        self.sectionStarts = getSections();
         var markButton = document.createElement('input');
         markButton.type = 'button';
         markButton.value = 'Start New Section Now';
         markButton.onclick = markSectionStart;
         insertBefore(markButton, desiredSibling);
 
+        var saveButton = document.createElement('input');
+        saveButton.type = 'button';
+        saveButton.value = 'Save';
+        saveButton.onclick = saveToUri;
+        insertBefore(saveButton, desiredSibling);
+
+        var trainButton = document.createElement('input');
         self.sectionsElement = document.createElement('p');
         insertBefore(self.sectionsElement, desiredSibling);
+
+        updatePhraseStartView();
     }
 
     self.init = function() {
