@@ -1,6 +1,6 @@
 var newPracticePlayer = function() {
 
-    var TIME_RESOLUTION = 0.05;
+    var TIME_RESOLUTION = 0.2;
     // Can you tell that I'm a python programmer?
     var self = {};
 
@@ -57,7 +57,7 @@ var newPracticePlayer = function() {
     var createSectionElement = function(time) {
         var e = document.createElement('input');
         e.type = 'button';
-        e.value = time.toFixed(2);
+        e.value = time.toFixed(1);
         e.onclick = function(event) {
             self.player.seekTo(time, true)
         }
@@ -69,7 +69,7 @@ var newPracticePlayer = function() {
         return parseFloat(element.value);
     }
 
-    var updatePhraseStartView = function() {
+    var updateSectionView = function() {
         var currentChild = self.sectionsElement.firstChild;
         var lastChild;
         if (!currentChild && self.sectionStarts.length) {
@@ -79,16 +79,25 @@ var newPracticePlayer = function() {
 
         for (var i = 0; i < self.sectionStarts.length; i++) {
             var start = self.sectionStarts[i];
-            // FIXME: handle removals.
             while (currentChild && getSectionTime(currentChild) < start - TIME_RESOLUTION) {
                 lastChild = currentChild;
                 currentChild = currentChild.nextSibling;
+                self.sectionsElement.removeChild(lastChild);
             }
             if (!currentChild || getSectionTime(currentChild) > start + TIME_RESOLUTION) {
                 var newElement = createSectionElement(start);
                 self.sectionsElement.insertBefore(newElement, currentChild);
             }
-            // else it's already there. Nothing to do here.
+            else if (currentChild) {
+                // it's already there. Skip over it.
+                currentChild = currentChild.nextSibling;
+            }
+        }
+
+        while (currentChild && getSectionTime(currentChild) > last(self.sectionStarts) + TIME_RESOLUTION) {
+            lastChild = currentChild;
+            currentChild = currentChild.nextSibling;
+            self.sectionsElement.removeChild(lastChild);
         }
     }
 
@@ -103,7 +112,7 @@ var newPracticePlayer = function() {
         self.sectionStarts.sort(function(a, b) {
             return a - b
         });
-        updatePhraseStartView();
+        updateSectionView();
     };
 
     var saveToUri = function() {
@@ -113,7 +122,7 @@ var newPracticePlayer = function() {
             hash = hash + 'v=' + videoId + '&';
         }
         var sectionStrings = self.sectionStarts.map(function(i) {
-            return i.toFixed(2)
+            return i.toFixed(1)
         });
         var sections = sectionStrings.join(',');
         hash = hash + 'sections=' + sections;
@@ -163,10 +172,22 @@ var newPracticePlayer = function() {
         startTrainingRun();
     };
 
+    var reparseHash = function() {
+        self.sectionStarts = getSections();
+        var currentVideo = self.player.getVideoUrl().match(/(v=)([^&]*)/)[2];
+        var requestedVideo = getVideoId()
+        if (currentVideo !== requestedVideo) {
+            self.player.loadVideoById(requestedVideo);
+        }
+        updateSectionView();
+    }
+
     var initSectionTracking = function(desiredSibling) {
         // sorted list of seconds.
-        // FIXME: listen for location updates.
         self.sectionStarts = getSections();
+        if ('onhashchange' in window) {
+            window.onhashchange = reparseHash;
+        }
         var markButton = document.createElement('input');
         markButton.type = 'button';
         markButton.value = 'Start Section';
@@ -188,7 +209,7 @@ var newPracticePlayer = function() {
         self.sectionsElement = document.createElement('p');
         insertBefore(self.sectionsElement, desiredSibling);
 
-        updatePhraseStartView();
+        updateSectionView();
     }
 
     self.init = function() {
