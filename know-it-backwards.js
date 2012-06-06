@@ -1,7 +1,8 @@
 var newPracticePlayer = function() {
 
     var TIME_RESOLUTION = 0.2;
-    // Can you tell that I'm a python programmer?
+    var DEFAULT_VIDEO = 'u1zgFlCw8Aw';
+    // Can you tell that I'm a python programmer yet?
     var self = {};
 
 
@@ -9,10 +10,10 @@ var newPracticePlayer = function() {
         var anchor = window.location.hash;
         var videoId;
         if (anchor) {
-            videoId = anchor.match(/(v=)([^&]*)/)[2];
+            videoId = (anchor.match(/(v=)([^&]*)/) || [])[2];
         }
         if (!videoId) {
-            videoId = 'u1zgFlCw8Aw';
+            videoId = DEFAULT_VIDEO;
         }
         return videoId;
     };
@@ -21,7 +22,7 @@ var newPracticePlayer = function() {
         var anchor = window.location.hash;
         var sections;
         if (anchor) {
-            sections = anchor.match(/(sections=)([^&]*)/)[2];
+            sections = (anchor.match(/(sections=)([^&]*)/) || [])[2];
         }
         if (!sections) {
             return [];
@@ -189,11 +190,23 @@ var newPracticePlayer = function() {
         startTrainingRun(userData);
     };
 
+    var getCurrentVideo = function() {
+        if (!self.player.getVideoUrl) {
+            // Assume it'll get there eventually.
+            return getVideoId();
+        }
+        var current = (self.player.getVideoUrl().match(/(v=)([^&]*)/) || [])[2];
+        if (!current) {
+            return getVideoId();
+        }
+    }
+
     var reparseHash = function() {
         self.sectionStarts = getSections();
-        var currentVideo = self.player.getVideoUrl().match(/(v=)([^&]*)/)[2];
-        var requestedVideo = getVideoId()
+        var currentVideo = getCurrentVideo();
+        var requestedVideo = getVideoId();
         if (currentVideo !== requestedVideo) {
+            console.log("changing video from " + currentVideo + " to " + requestedVideo);
             self.player.loadVideoById(requestedVideo);
         }
         updateSectionView();
