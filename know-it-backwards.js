@@ -213,6 +213,7 @@ var newPracticePlayer = function() {
         if (!current) {
             return getVideoId();
         }
+        return current;
     }
 
     var reparseHash = function() {
