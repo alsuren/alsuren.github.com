@@ -207,7 +207,7 @@ var newPracticePlayer = function() {
         }
         var markButton = document.createElement('input');
         markButton.type = 'button';
-        markButton.value = 'Start Section';
+        markButton.value = 'Mark Section';
         markButton.onclick = markSectionStart;
         insertBefore(markButton, desiredSibling);
 
