@@ -44,31 +44,11 @@ var newPracticePlayer = function() {
 
         var videoId = getVideoId();
 
-        var onPlayerReady = function(event) {
-            player.playVideo();
-        };
-
-        var done = false;
-
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING && !done) {
-                setTimeout(stopVideo, 6000);
-                done = true;
-            }
-        };
-
-        var stopVideo = function() {
-            player.stopVideo();
-        };
-
         var player = new YT.Player('player', {
             height: '390',
             width: '640',
             videoId: videoId,
-            events: {
-                'onReady': onPlayerReady,
-                'onStateChange': onPlayerStateChange
-            }
+            events: {}
         });
 
         return player;
