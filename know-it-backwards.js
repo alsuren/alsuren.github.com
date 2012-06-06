@@ -212,4 +212,5 @@ function onYouTubePlayerAPIReady() {
 var tag = document.createElement('script');
 var firstScriptTag = document.getElementsByTagName('script')[0];
 tag.src = "http://www.youtube.com/player_api";
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);​
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
