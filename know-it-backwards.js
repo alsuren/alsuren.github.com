@@ -140,12 +140,47 @@ var newPracticePlayer = function() {
         window.location.hash = hash;
     }
 
+
+
+    var startTrainingRun = function() {
+        self.trainingRunsDone++;
+        var i = self.sectionStarts.length - (self.trainingRunsDone + 1);
+        if (i < 0) {
+            return;
+        }
+        var pos = self.sectionStarts[i];
+        self.player.seekTo(pos);
+
+        setTimer();
+    };
+
+    var last = function(a) {
+        return a[a.length - 1];
+    };
+
+    var setRealTimer = function() {
+        var endTime = last(self.sectionStarts);
+        var curTime = self.player.getCurrentTime();
+        var timeout = (endTime - curTime) * 1000;
+        setTimeout(startTrainingRun, timeout);
+    }
+
+    var setTimer = function() {
+        setTimeout(setRealTimer, 1000);
+    };
+
+    var startTraining = function() {
+        console.log('starting')
+        self.trainingRunsDone = 0;
+        startTrainingRun();
+    };
+
     var initSectionTracking = function(desiredSibling) {
         // sorted list of seconds.
         self.sectionStarts = getSections();
         var markButton = document.createElement('input');
         markButton.type = 'button';
-        markButton.value = 'Start New Section Now';
+        markButton.value = 'Start Section';
         markButton.onclick = markSectionStart;
         insertBefore(markButton, desiredSibling);
 
@@ -156,6 +191,11 @@ var newPracticePlayer = function() {
         insertBefore(saveButton, desiredSibling);
 
         var trainButton = document.createElement('input');
+        trainButton.type = 'button';
+        trainButton.value = 'Train!';
+        trainButton.onclick = startTraining;
+        insertBefore(trainButton, desiredSibling);
+
         self.sectionsElement = document.createElement('p');
         insertBefore(self.sectionsElement, desiredSibling);
 
