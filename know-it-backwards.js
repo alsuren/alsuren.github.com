@@ -221,15 +221,16 @@ var newPracticePlayer = function() {
         if (self.trainingGeneration !== 0) {
             return;
         }
-        self.trainButton.value = "Loading... Click if Impatient.";
-        self.trainButton.onclick = cb;
         var currentTime = self.player.getCurrentTime();
         var duration = self.player.getDuration();
         var totalSize = self.player.getVideoBytesTotal();
         var loadedSize = self.player.getVideoBytesLoaded();
-        var targetTime = duration * (loadedSize / totalSize);
+        var requiredTime = last(self.sectionStarts) || 1;
+        var progress = ((duration / requiredTime) * (loadedSize / totalSize)) || 0
+        self.trainButton.value = ("Loading (" + (100 * progress).toFixed(0) + "%)... Click if Impatient.");
+        self.trainButton.onclick = cb;
 
-        if ((targetTime || 0) > (last(self.sectionStarts) || 0)) {
+        if (progress >= 1) {
             cb();
         }
         else {
