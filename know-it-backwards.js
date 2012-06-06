@@ -92,7 +92,6 @@ var newPracticePlayer = function() {
     var updatePhraseStartView = function() {
         var currentChild = self.sectionsElement.firstChild;
         var lastChild;
-        console.log(self.sectionStarts);
         if (!currentChild && self.sectionStarts.length) {
             currentChild = createSectionElement(self.sectionStarts[0]);
             self.sectionsElement.appendChild(currentChild);
@@ -102,17 +101,14 @@ var newPracticePlayer = function() {
             var start = self.sectionStarts[i];
             // FIXME: handle removals.
             while (currentChild && getSectionTime(currentChild) < start - TIME_RESOLUTION) {
-                console.log('skipping ' + currentChild.value);
                 lastChild = currentChild;
                 currentChild = currentChild.nextSibling;
             }
             if (!currentChild || getSectionTime(currentChild) > start + TIME_RESOLUTION) {
                 var newElement = createSectionElement(start);
                 self.sectionsElement.insertBefore(newElement, currentChild);
-                console.log('inserting ' + newElement.value + ' before ' + currentChild);
             }
             // else it's already there. Nothing to do here.
-            console.log('Done with ' + self.sectionStarts[i]);
         }
     }
 
