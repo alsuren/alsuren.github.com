@@ -30,7 +30,7 @@ var newPracticePlayer = function() {
             return parseFloat(s);
         });
         return floatList;
-    }
+    };
 
     var insertBefore = function(newNode, desiredSibling) {
         desiredSibling.parentNode.insertBefore(newNode, desiredSibling);
@@ -64,12 +64,12 @@ var newPracticePlayer = function() {
             self.player.seekTo(time, true)
         }
         return e;
-    }
+    };
 
     var getSectionTime = function(element) {
         // FIXME: This looks fragile. Could I just attatch a bullshit float somewhere?
         return parseFloat(element.value);
-    }
+    };
 
     var updateSectionView = function() {
         var currentChild = self.sectionsElement.firstChild;
@@ -101,7 +101,7 @@ var newPracticePlayer = function() {
             currentChild = currentChild.nextSibling;
             self.sectionsElement.removeChild(lastChild);
         }
-    }
+    };
 
     var markSectionStart = function() {
         var t = self.player.getCurrentTime();
@@ -129,8 +129,7 @@ var newPracticePlayer = function() {
         var sections = sectionStrings.join(',');
         hash = hash + 'sections=' + sections;
         window.location.hash = hash;
-    }
-
+    };
 
     var stopTraining = function() {
         self.trainingGeneration++;
@@ -198,7 +197,7 @@ var newPracticePlayer = function() {
             self.player.loadVideoById(requestedVideo);
         }
         updateSectionView();
-    }
+    };
 
     var initSectionTracking = function(desiredSibling) {
         // sorted list of seconds.
@@ -228,13 +227,13 @@ var newPracticePlayer = function() {
         insertBefore(self.sectionsElement, desiredSibling);
 
         updateSectionView();
-    }
+    };
 
     self.init = function() {
         var firstDivTag = document.getElementsByTagName('div')[0];
         self.player = newPlayer(firstDivTag);
         initSectionTracking(firstDivTag);
-    }
+    };
 
     return self;
 }
