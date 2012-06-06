@@ -230,10 +230,12 @@ var newPracticePlayer = function() {
         }
         var currentTime = self.player.getCurrentTime();
         var duration = self.player.getDuration();
-        var totalSize = self.player.getVideoBytesTotal();
+        var totalSize = self.player.getVideoBytesTotal() || Infinity;
         var loadedSize = self.player.getVideoBytesLoaded();
         var requiredTime = last(self.sectionStarts) || 1;
-        var progress = ((duration / requiredTime) * (loadedSize / totalSize)) || 0
+        var progress = ((duration / requiredTime) * (loadedSize / totalSize)) || 0;
+        // console.log('(' + duration + ' / ' + requiredTime +
+        // ') * (' + loadedSize + ' / ' + totalSize + ') == ' + progress);
         self.trainButton.value = ("Loading (" + (100 * progress).toFixed(0) + "%)... Click if Impatient.");
         self.trainButton.onclick = cb;
 
