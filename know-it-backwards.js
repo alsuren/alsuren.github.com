@@ -6,6 +6,13 @@ var newPracticePlayer = function() {
     // Can you tell that I'm a python programmer yet?
     var self = {};
 
+    // Shadow IE's broken setTimeout.
+    var setTimeout = function(cb, time, arg1, arg2, arg3, arg4) {
+        window.setTimeout(function() {
+            cb(arg1, arg2, arg3, arg4)
+        }, time);
+    };
+
 
     var getVideoId = function() {
         var anchor = window.location.hash;
